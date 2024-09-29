@@ -33,10 +33,3 @@ jobs:
         export DB_HOST=${{ secrets.DB_HOST }}
         export REDIS_HOST=${{ secrets.REDIS_HOST }}
         python -m unittest tests
-    - name: If test failed run rollback
-      if: ${{ steps.test.outcome == 'failure' }}
-      run: |
-        git config --global user.email "tersk.bo@gmail.com"
-        git config --global user.name "Bohdan Terskow"
-        git reset --hard HEAD~1
-        git push origin master --force
