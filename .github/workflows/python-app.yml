@@ -1,0 +1,42 @@
+# This workflow will install Python dependencies, run tests and lint with a single version of Python
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
+
+name: Python application
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    environment: app
+    
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v3
+      with:
+        python-version: "3.12"
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+    - name: Run test
+      id: test
+      run: |
+        export DB_HOST=${{ secrets.DB_HOST }}
+        export REDIS_HOST=${{ secrets.REDIS_HOST }}
+        python -m unittest tests
+    - name: If test failed run rollback
+      if: ${{ steps.test.outcome == 'failure' }}
+      run: |
+        git config --global user.email "tersk.bo@gmail.com"
+        git config --global user.name "Bohdan Terskow"
+        git reset --hard HEAD~1
+        git push origin master --force
