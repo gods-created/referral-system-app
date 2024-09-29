@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+starlette
+loguru
+celery
+redis
+SQLAlchemy
+python-multipart
+alembic
+mysql-connector-python
+pydantic[email]
